@@ -1,10 +1,16 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
+
 
 void main() {
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+
   const MyApp({super.key});
 
   @override
@@ -18,6 +24,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
+
   const MyHomePage({super.key, required this.title});
   final String title;
   @override
@@ -31,34 +38,92 @@ class _messages_Test {
 
 
 class _MyHomePageState extends State<MyHomePage> {
+  late WebSocketChannel channel;
+
   final TextEditingController _text_controller = TextEditingController();
   final List<_messages_Test> message = [
     _messages_Test(text: "Hello", isMe: false),
     _messages_Test(text: "Hi! How are you?", isMe: true)
   ];
   void sendMessage() {
-    if (_text_controller.text.trim().isEmpty) {
-      return;
-    }
+    if (_text_controller.text.isEmpty) return;
 
-    final text = _text_controller.text;
+    channel.sink.add(_text_controller.text);
+
     setState(() {
       message.insert(
         0,
-        _messages_Test(text: text, isMe: true),
+        _messages_Test(text: _text_controller.text, isMe: true),
       );
     });
 
     _text_controller.clear();
+  }
 
-    Future.delayed(const Duration(milliseconds: 800), () {
-      setState(() {
-        message.insert(
-          0,
-          _messages_Test(text: "Echo: $text", isMe: false),
-        );
-      });
-    });
+  // void sendMessage() {
+  //   if (_text_controller.text.trim().isEmpty) {
+  //     return;
+  //   }
+  //
+  //   final text = _text_controller.text;
+  //   setState(() {
+  //     message.insert(
+  //       0,
+  //       _messages_Test(text: text, isMe: true),
+  //     );
+  //   });
+  //
+  //   _text_controller.clear();
+  //
+  //   Future.delayed(const Duration(milliseconds: 800), () {
+  //     setState(() {
+  //       message.insert(
+  //         0,
+  //         _messages_Test(text: "Echo: $text", isMe: false),
+  //       );
+  //     });
+  //   });
+  // }
+  @override
+  void initState() {
+    super.initState();
+
+    channel = WebSocketChannel.connect(
+      Uri.parse('ws://192.168.1.70:8080'),
+    );
+
+    print('Trying to connect to server...');
+
+    channel.stream.listen(
+          (data) {
+        print('Received from server: $data');
+        setState(() {
+          message.insert(
+            0,
+            _messages_Test(
+              text: data.toString(),
+              isMe: false,
+            ),
+          );
+        });
+      },
+      onDone: () => print('WebSocket closed'),
+      onError: (error) => print('WebSocket error: $error'),
+    );
+
+    print('Sending test message...');
+    channel.sink.add('Hello from Flutter!');
+
+  }
+
+
+
+
+  @override
+  void dispose() {
+    channel.sink.close();
+    _text_controller.dispose();
+    super.dispose();
   }
   @override
   Widget build(BuildContext context) {
@@ -132,7 +197,7 @@ sendMessage();
               ],
             ),
           ))
-          
+
         ],
       )
     );
