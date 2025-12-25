@@ -31,11 +31,29 @@ class _messages_Test {
 
 
 class _MyHomePageState extends State<MyHomePage> {
-
+  final TextEditingController _text_controller = TextEditingController();
   final List<_messages_Test> message = [
     _messages_Test(text: "Hello", isMe: false),
     _messages_Test(text: "Hi! How are you?", isMe: true)
   ];
+  void sendMessage()
+  {
+    if (_text_controller.text.trim().isEmpty)
+      {
+        return;
+      }
+
+    setState(() {
+
+      message.insert(0, _messages_Test(text: _text_controller.text, isMe: true));
+
+    });
+
+    _text_controller.clear();
+
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -61,19 +79,19 @@ class _MyHomePageState extends State<MyHomePage> {
               itemBuilder: (context, index){
               final msg = message[index];
               return Align(
-                alignment: msg.isMe ? Alignment.centerLeft : Alignment.centerRight,
+                alignment: msg.isMe ? Alignment.centerRight : Alignment.centerLeft,
                 child: Container(
                   margin: const EdgeInsets.symmetric(vertical: 4),
                   padding: const EdgeInsets.all(12),
                   constraints: const BoxConstraints(maxWidth: 280),
                   decoration: BoxDecoration(
-                    color: msg.isMe ? Color(0x353B4AFF) : Color(0xFF99999F
+                    color: !msg.isMe ? Color(0x353B4AFF) : Color(0xFF99999F
                     ),
                     borderRadius: BorderRadius.circular(12)
                   ),
                   child: Text(msg.text,
                   style: TextStyle(
-                    color: msg.isMe ? Colors.white : Colors.black
+                    color: !msg.isMe ? Colors.white : Colors.black
                   ),),
                 ),
               );
@@ -83,6 +101,7 @@ class _MyHomePageState extends State<MyHomePage> {
             child: Row(
               children: [
                 Expanded(child: TextField(
+                  controller: _text_controller,
                   style: const TextStyle(color: Colors.white),
                   cursorColor: Colors.white,
                   decoration: InputDecoration(
@@ -96,7 +115,6 @@ class _MyHomePageState extends State<MyHomePage> {
                       borderSide: BorderSide.none,
                     ),
                   ),
-
                 ),
                 ),
                 SizedBox(width: 8,),
@@ -104,7 +122,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     icon: const Icon(Icons.send),
                 color: Colors.blue,
                 onPressed: (){
-
+sendMessage();
                 },)
               ],
             ),
