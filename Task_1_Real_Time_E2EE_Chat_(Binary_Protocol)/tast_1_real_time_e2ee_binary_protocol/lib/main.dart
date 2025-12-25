@@ -36,25 +36,30 @@ class _MyHomePageState extends State<MyHomePage> {
     _messages_Test(text: "Hello", isMe: false),
     _messages_Test(text: "Hi! How are you?", isMe: true)
   ];
-  void sendMessage()
-  {
-    if (_text_controller.text.trim().isEmpty)
-      {
-        return;
-      }
+  void sendMessage() {
+    if (_text_controller.text.trim().isEmpty) {
+      return;
+    }
 
+    final text = _text_controller.text;
     setState(() {
-
-      message.insert(0, _messages_Test(text: _text_controller.text, isMe: true));
-
+      message.insert(
+        0,
+        _messages_Test(text: text, isMe: true),
+      );
     });
 
     _text_controller.clear();
 
+    Future.delayed(const Duration(milliseconds: 800), () {
+      setState(() {
+        message.insert(
+          0,
+          _messages_Test(text: "Echo: $text", isMe: false),
+        );
+      });
+    });
   }
-
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
