@@ -53,6 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Column(
         children: [
+          //Chat Scroll View
           Expanded(child: ListView.builder(
             reverse: true,
             padding: const EdgeInsets.all(8),
@@ -66,7 +67,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   padding: const EdgeInsets.all(12),
                   constraints: const BoxConstraints(maxWidth: 280),
                   decoration: BoxDecoration(
-                    color: msg.isMe ? Color(0x353B4AFF) : Color(0xFF747691),
+                    color: msg.isMe ? Color(0x353B4AFF) : Color(0xFF99999F
+                    ),
                     borderRadius: BorderRadius.circular(12)
                   ),
                   child: Text(msg.text,
@@ -74,12 +76,40 @@ class _MyHomePageState extends State<MyHomePage> {
                     color: msg.isMe ? Colors.white : Colors.black
                   ),),
                 ),
-
               );
+              })),
+          SafeArea(child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+            child: Row(
+              children: [
+                Expanded(child: TextField(
+                  style: const TextStyle(color: Colors.white),
+                  cursorColor: Colors.white,
+                  decoration: InputDecoration(
+                    hintText: "Type a message",
+                    filled: true,
+                    hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
+                    fillColor: const Color(0xFF747C8E).withOpacity(0.5),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
 
-              }))
+                ),
+                ),
+                SizedBox(width: 8,),
+                IconButton(
+                    icon: const Icon(Icons.send),
+                color: Colors.blue,
+                onPressed: (){
 
-
+                },)
+              ],
+            ),
+          ))
+          
         ],
       )
     );
